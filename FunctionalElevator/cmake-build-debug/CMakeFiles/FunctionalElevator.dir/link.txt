@@ -1,0 +1,3 @@
+"C:\Program Files\JetBrains\CLion 2023.2.1\bin\cmake\win\x64\bin\cmake.exe" -E rm -f CMakeFiles\FunctionalElevator.dir/objects.a
+C:\PROGRA~1\JETBRA~1\CLION2~1.1\bin\mingw\bin\ar.exe qc CMakeFiles\FunctionalElevator.dir/objects.a @CMakeFiles\FunctionalElevator.dir\objects1.rsp
+C:\PROGRA~1\JETBRA~1\CLION2~1.1\bin\mingw\bin\gcc.exe -g -Wl,--whole-archive CMakeFiles\FunctionalElevator.dir/objects.a -Wl,--no-whole-archive -o FunctionalElevator.exe -Wl,--out-implib,libFunctionalElevator.dll.a -Wl,--major-image-version,0,--minor-image-version,0 @CMakeFiles\FunctionalElevator.dir\linkLibs.rsp
