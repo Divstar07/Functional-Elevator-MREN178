@@ -1,4 +1,4 @@
-# Install script for directory: C:/Users/dnduk/CLionProjects/FunctionalElevator
+# Install script for directory: C:/Users/dnduk/OneDrive/Documents/GitHub/Functional-Elevator-MREN178/FunctionalElevator
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
@@ -45,5 +45,5 @@ endif()
 
 string(REPLACE ";" "\n" CMAKE_INSTALL_MANIFEST_CONTENT
        "${CMAKE_INSTALL_MANIFEST_FILES}")
-file(WRITE "C:/Users/dnduk/CLionProjects/FunctionalElevator/cmake-build-debug/${CMAKE_INSTALL_MANIFEST}"
+file(WRITE "C:/Users/dnduk/OneDrive/Documents/GitHub/Functional-Elevator-MREN178/FunctionalElevator/cmake-build-debug/${CMAKE_INSTALL_MANIFEST}"
      "${CMAKE_INSTALL_MANIFEST_CONTENT}")
