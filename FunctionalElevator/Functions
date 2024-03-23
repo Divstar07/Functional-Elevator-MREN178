@@ -1,0 +1,51 @@
+#define EXIT_OK 0;
+#define EXIT_ERR -1;
+typedef struct node{
+    struct node* next;
+
+    int floor;
+}Node;
+
+int insert_request(Node* head, int floor_number){
+    Node* n = (Node*)malloc(sizeof (Node));
+    n->next = NULL;
+    n->floor = floor_number;
+    if (head == NULL){
+        head = n;
+        return EXIT_OK;
+    }else{
+        Node* temp = head;
+        while (temp->next != NULL){
+            temp = temp->next;
+        }
+        temp->next = n;
+    }return EXIT_OK;
+}
+
+int delete_request(int floor_number, Node* head){
+    if (head == NULL){
+        return EXIT_ERR;
+    }if (head->floor == floor_number){
+        while (head->floor == floor_number) {
+            Node *temp = head;
+            head = temp->next;
+            free(temp);
+            if (head == NULL){
+                return EXIT_OK;
+            }
+        }
+    }
+    Node* temp = head;
+    while(temp->next != NULL){
+        if (temp->next->floor == floor_number){
+            Node* temp2 = temp->next->next;
+            Node* temp3 = temp->next;
+            temp->next = temp2;
+            free(temp3);
+            continue;
+        } else{
+            temp = temp->next;
+        }
+    }
+    return EXIT_OK;
+}
