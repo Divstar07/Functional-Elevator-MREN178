@@ -3,14 +3,17 @@
 
 #include <Arduino.h>
 
+enum direction { UP,
+                 DOWN };
+
+
 // Structure of a request
 typedef struct req {
-  int curr_Floor;  //store current floor
-  int pickUp;      //store pickup floor
-  int dropOff;     //store dropOff floor
-  int direction;   //store direction
+  int pickUp;         //store pickup floor
+  int dropOff;        //store dropOff floor
+  direction req_dir;  //store direction
 
-  struct* req next_req;
+  struct req* next_req;
 
 } request;
 
@@ -40,10 +43,13 @@ typedef struct {
 //==========================FUNCTION PROTOTYPES=====================
 
 //Create a request
-void create_Request();
+void create_Request(int, int);
 
 //insert a request into the right list
-void insert_Request();
+int insert_Request(request*, int, int);
+
+//delete a request from the right list
+void delete_Request();
 
 //create a stop struct
 void create_Stop();
