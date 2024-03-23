@@ -43,7 +43,7 @@ typedef struct {
 //==========================FUNCTION PROTOTYPES=====================
 
 //Create a request
-void create_Request(int, int);
+request* create_Request(int, int);
 
 //insert a request into the right list
 int insert_Request(request*, int, int);
