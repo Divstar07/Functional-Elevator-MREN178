@@ -28,12 +28,12 @@ request* create_Request(int pickUp, int dropOff) {
 
 //===============================INSERT REQUEST======================================================
 
-int insert_request(request** request_head, int pickUp, int dropOff) {
+int insert_request(request** request_head, _List* list, int pickUp, int dropOff) {
 
   /* REMEMBER TO INCREASE THE COUNT OF THE LIST AFTER EACH INSERT
    * MAYBE TAKE IN THE LIST AS A PARAMETER AND INCREASE THE COUNT AFTER EACH INSERT
    */
-
+  list->count += 1;
   request* new_request = create_Request(pickUp, dropOff);
 
   /* INSERT SHOULD FAIL IF INSERTING INTO CURRENT PASSANGER LIST AND LIST IS FULL
@@ -89,7 +89,6 @@ int insert_request(request** request_head, int pickUp, int dropOff) {
 //                     return EXIT_OK;
 //                 }
 //             }
-
 //         request* temp = request_head;
 //         while(temp->next_req != NULL){
 //             if (temp->next_req->floor == delete_floor){
