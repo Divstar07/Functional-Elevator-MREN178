@@ -28,12 +28,12 @@ request* create_Request(int pickUp, int dropOff) {
 
 //===============================INSERT REQUEST======================================================
 
-int insert_request(request** request_head, int pickUp, int dropOff) {
+int insert_request(request** request_head, _List* request_list, int pickUp, int dropOff) {
 
   /* REMEMBER TO INCREASE THE COUNT OF THE LIST AFTER EACH INSERT
    * MAYBE TAKE IN THE LIST AS A PARAMETER AND INCREASE THE COUNT AFTER EACH INSERT
    */
-
+  
   request* new_request = create_Request(pickUp, dropOff);
 
   /* INSERT SHOULD FAIL IF INSERTING INTO CURRENT PASSANGER LIST AND LIST IS FULL
@@ -60,7 +60,39 @@ int insert_request(request** request_head, int pickUp, int dropOff) {
   return EXIT_OK;
 }
 
+int insert_request(request** request_head, _List* curr_list, int pickUp, int dropOff) {
 
+  /* REMEMBER TO INCREASE THE COUNT OF THE LIST AFTER EACH INSERT
+   * MAYBE TAKE IN THE LIST AS A PARAMETER AND INCREASE THE COUNT AFTER EACH INSERT
+   */
+
+  request* new_request = create_Request(pickUp, dropOff);
+
+  /* INSERT SHOULD FAIL IF INSERTING INTO CURRENT PASSANGER LIST AND LIST IS FULL
+   * MAYBE CREATE A BOOL TO SIGNIFY IF INSERTING INTO CURR PASSENGER LIST, AND IF IT IS FULL RETURN EXIT_ERR
+   * OR CREATE ANOTHER INSERT FUNCTION SPECIFICALLY FOR CURR PASSENGER LIST (MIGHT BE EASIER)
+   */
+
+  if (curr_list->count == 10){
+    return EXIT_ERR;
+  }
+  if ((*request_head) == NULL) {
+    (*request_head) = new_request;
+    return EXIT_OK;
+  }
+
+  else {
+    request* temp = (*request_head);
+
+    //traverse till last request in list
+    while (temp->next_req != NULL) {
+      temp = temp->next_req;
+    }
+
+    temp->next_req = new_request;
+  }
+  return EXIT_OK;
+}
 //=====================================DELETE REQUEST========================================================
 
 
