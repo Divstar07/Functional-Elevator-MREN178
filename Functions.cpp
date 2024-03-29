@@ -4,6 +4,9 @@
 #define EXIT_OK 0;
 #define EXIT_ERR -1;
 
+unsigned long FLOOR_INTERVAL = 100000;  //might need to tweak
+unsigned long STOP_TIME = 2000;         //might need to tweak
+
 
 //===============================CREATE REQUEST=====================================================
 request* create_Request(int pickUp, int dropOff) {
@@ -60,49 +63,159 @@ int insert_request(request** request_head, int pickUp, int dropOff) {
 
 //=====================================DELETE REQUEST========================================================
 
-int delete_request(int delete_floor, request** request_head, request** passenger_Head, bool del_From_pickUp) {
-  /* request_head is the head of the request list
- * passenger_Head is the head of the current passengers list
- * REMEMBER THESE ARE DOUBLE POINTERS
- */
 
-  if (del_From_pickUp) {
-    if ((*request_head) == NULL) {
-      return EXIT_ERR;
-    }
-    /* delete items from the list of requests and add them to the current passangers list
-          * IF IT IS NOT FULL. add them one by one until it is full, then stop adding
-          */
+// int delete_request(int delete_floor, request** request_head, request** passenger_Head, bool del_From_pickUp) {
+//  /* request_head is the head of the request list
+//  * passenger_Head is the head of the current passengers list
+//  * REMEMBER THESE ARE DOUBLE POINTERS
+//  */
 
-    //"floor" should be replaced with pickup when deleting from pickup list
+//   if (del_From_pickUp) {
+//     if ((*request_head) == NULL) {
+//       return EXIT_ERR;
+//     }
+//     /* delete items from the list of requests and add them to the current passangers list
+//           * IF IT IS NOT FULL. add them one by one until it is full, then stop adding
+//           */
 
-    /* if (request_head->floor == delete_floor){
-            while (request_head->floor == delete_floor) {
-                request *temp = request_head;
-                request_head = temp->next_req;
-                free(temp);
-                if (request_head == NULL){
-                    return EXIT_OK;
-                }
-            }
+//     //"floor" should be replaced with pickup when deleting from pickup list
 
-        request* temp = request_head;
-        while(temp->next_req != NULL){
-            if (temp->next_req->floor == delete_floor){
-                request* temp2 = temp->next_req->next_req;
-                request* temp3 = temp->next_req;
-                temp->next_req = temp2;
-                free(temp3);
-            } else{
-                temp = temp->next_req;
-            }
-        }
-        return EXIT_OK;
-        */
+//     /* if (request_head->floor == delete_floor){
+//             while (request_head->floor == delete_floor) {
+//                 request *temp = request_head;
+//                 request_head = temp->next_req;
+//                 free(temp);
+//                 if (request_head == NULL){
+//                     return EXIT_OK;
+//                 }
+//             }
+
+//         request* temp = request_head;
+//         while(temp->next_req != NULL){
+//             if (temp->next_req->floor == delete_floor){
+//                 request* temp2 = temp->next_req->next_req;
+//                 request* temp3 = temp->next_req;
+//                 temp->next_req = temp2;
+//                 free(temp3);
+//             } else{
+//                 temp = temp->next_req;
+//             }
+//         }
+//         return EXIT_OK;
+//         */
+
+//   }
+
+
+//   else {
+//     // if deleting from current passangers list, then passenger has been delivered
+//   }
+// }
+
+
+
+//==================================== CREATE STOP =================================================
+Stop* create_Stop(int floor) {
+  // make a pointer to a stop
+  Stop* new_Stop = (Stop*)malloc(sizeof(Stop));
+
+  //set the stopFloor to be what is parsed into the function
+  new_Stop->p_next = NULL;
+  new_Stop->stop = floor;
+
+  return new_Stop;
+}
+
+//=================================== INSERT STOP ================================================
+int insert_Stop(int floor, Stop* stop_Head) {
+  //takes in the head of the list to insert from
+  Stop* new_Stop = create_Stop(floor);
+
+  if (new_Stop == NULL) return EXIT_ERR;
+
+  // if stops list is empty, insert a new stop at the beginning
+  if (stop_Head == NULL) {
+    stop_Head = new_Stop;
   }
 
+  //otherwise traverse until you find the last item
+  Stop* temp = stop_Head;
 
-  else {
-    // if deleting from current passangers list, then passenger has been delivered
+  while (temp->p_next != NULL) {
+    if (temp->stop == new_Stop ->stop) {
+      return EXIT_OK; //there will only ever be floors 1 to 4 in the elevator
+    }
+    temp = temp->p_next;
+  }
+
+  temp->p_next = new_Stop;
+  return EXIT_OK;
+}
+
+//=====================================SET ELEVATOR===============================================
+void set_Elev(Elevator* elevator, int desired_Floor, int req_BUTTON) {
+
+  //CHECK FOR FLOOR LIMITS IF THE ELEV IS ON 4 DONT GO UP IF ITS ON 1 DONT GO DOWN
+
+  /* HAVE PARAM TO INDICATE IF IDLE AND SET DIRECTLY WITHOUT CHECKING EACH FLOOR 
+   * STOP AT REQ FLOOR AND PICK UP PASSANGER, THEN CONTINUE TO CHECK EACH FLOOR TO SEE
+   * IF ANYONE NEEDS TO GET ON OR OFF
+   */
+
+
+  /* IN THE CHECK FOR GOING DOWN OR UP, SEARCH THE UP LIST WHEN GOING UP, OR DOWN LIST WHEN GOING DOWN */
+
+
+  //ADD AN IF STATEMENT TO CHECK CURRENT FLOOR ON THE FIRST FLOOR BECAUSE I'M CHANGING THE LOOP
+
+  int distance = abs(desired_Floor - elevator->current_Floor);
+  unsigned long start_Time = 1;  //store the time the elevator starts moving
+
+  //if desired_Floor > currFloor elevator moves up
+  if (desired_Floor > elevator->current_Floor) {
+    Serial.println("Going Up!");
+
+    Serial.print("Current Floor: ");
+    Serial.println(elevator->current_Floor);
+
+    while (start_Time <= (distance * FLOOR_INTERVAL)) {
+
+      //Check if a request wants to be entered
+      if (digitalRead(req_BUTTON) == HIGH) {
+        //enter request
+      }
+
+      if ((start_Time % FLOOR_INTERVAL) == 0) {
+        elevator->current_Floor++;
+        //CHECK DROP OFF AND PICKUP LISTS TO SEE IF NEED TO OFFLOAD OR ONBOARD ELEV
+        Serial.print("Current Floor: ");
+        Serial.println(elevator->current_Floor);
+      }
+
+      start_Time++;
+    }
+
+  } else if (desired_Floor < elevator->current_Floor) {
+    Serial.println("Going Down!");
+
+    Serial.print("Current Floor: ");
+    Serial.println(elevator->current_Floor);
+
+    while (start_Time <= (distance * FLOOR_INTERVAL)) {
+
+      //Check if a request wants to be entered
+      if (digitalRead(req_BUTTON) == HIGH) {
+        //enter request
+      }
+
+      if ((start_Time % FLOOR_INTERVAL) == 0) {
+        elevator->current_Floor--;
+        //CHECK DROP OFF AND PICKUP LISTS TO SEE IF NEED TO OFFLOAD OR ONBOARD ELEV
+        Serial.print("Current Floor: ");
+        Serial.println(elevator->current_Floor);
+      }
+
+      start_Time++;
+    }
   }
 }
