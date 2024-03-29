@@ -14,22 +14,24 @@ int delete_request(int delete_floor, request** request_head, request** passenger
 
 //     //"floor" should be replaced with pickup when deleting from pickup list
 
-//     /* if (request_head->floor == delete_floor){
-//             while (request_head->floor == delete_floor) {
-//                 request *temp = request_head;
+//     /* if (*request_head->floor == delete_floor){
+//             while (*request_head->floor == delete_floor) {
+//                 request *temp = request_head*;
 //                 *request_head = temp->next_req;
+                   //INSERT HERE
 //                 free(temp);
 //                 if (request_head == NULL){
 //                     return EXIT_OK;
 //                 }
 //             }
 
-//         request* temp = request_head;
+//         request* temp = request_head*;
 //         while(temp->next_req != NULL){
 //             if (temp->next_req->floor == delete_floor){
 //                 request* temp2 = temp->next_req->next_req;
 //                 request* temp3 = temp->next_req;
 //                 temp->next_req = temp2;
+                   //INSERT temp3
 //                 free(temp3);
 //             } else{
 //                 temp = temp->next_req;
