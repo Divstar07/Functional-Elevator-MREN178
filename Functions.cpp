@@ -3,6 +3,7 @@
 
 #define EXIT_OK 0;
 #define EXIT_ERR -1;
+#define MAX 10;
 
 unsigned long FLOOR_INTERVAL = 100000; //might need to tweak
 unsigned long STOP_TIME = 2000; //might need to tweak
