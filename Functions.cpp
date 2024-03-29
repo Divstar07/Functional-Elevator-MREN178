@@ -60,7 +60,7 @@ int insert_request(request** request_head, _List* request_list, int pickUp, int 
   return EXIT_OK;
 }
 
-int insert_request(request** request_head, _List* curr_list, int pickUp, int dropOff) {
+int insert_curr(request** request_head, _List* curr_list, int pickUp, int dropOff) {
 
   /* REMEMBER TO INCREASE THE COUNT OF THE LIST AFTER EACH INSERT
    * MAYBE TAKE IN THE LIST AS A PARAMETER AND INCREASE THE COUNT AFTER EACH INSERT
