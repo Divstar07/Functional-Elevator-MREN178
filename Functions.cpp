@@ -3,10 +3,9 @@
 
 #define EXIT_OK 0;
 #define EXIT_ERR -1;
-#define MAX 10;
 
-unsigned long FLOOR_INTERVAL = 100000; //might need to tweak
-unsigned long STOP_TIME = 2000; //might need to tweak
+unsigned long FLOOR_INTERVAL = 100000;  //might need to tweak
+unsigned long STOP_TIME = 2000;         //might need to tweak
 
 
 //===============================CREATE REQUEST=====================================================
@@ -29,12 +28,12 @@ request* create_Request(int pickUp, int dropOff) {
 
 //===============================INSERT REQUEST======================================================
 
-int insert_request(request** request_head, _List* list, int pickUp, int dropOff) {
+int insert_request(request** request_head, int pickUp, int dropOff) {
 
   /* REMEMBER TO INCREASE THE COUNT OF THE LIST AFTER EACH INSERT
    * MAYBE TAKE IN THE LIST AS A PARAMETER AND INCREASE THE COUNT AFTER EACH INSERT
    */
-  list->count += 1;
+
   request* new_request = create_Request(pickUp, dropOff);
 
   /* INSERT SHOULD FAIL IF INSERTING INTO CURRENT PASSANGER LIST AND LIST IS FULL
@@ -66,7 +65,7 @@ int insert_request(request** request_head, _List* list, int pickUp, int dropOff)
 
 
 // int delete_request(int delete_floor, request** request_head, request** passenger_Head, bool del_From_pickUp) {
-//   /* request_head is the head of the request list
+//  /* request_head is the head of the request list
 //  * passenger_Head is the head of the current passengers list
 //  * REMEMBER THESE ARE DOUBLE POINTERS
 //  */
@@ -90,6 +89,7 @@ int insert_request(request** request_head, _List* list, int pickUp, int dropOff)
 //                     return EXIT_OK;
 //                 }
 //             }
+
 //         request* temp = request_head;
 //         while(temp->next_req != NULL){
 //             if (temp->next_req->floor == delete_floor){
@@ -114,18 +114,48 @@ int insert_request(request** request_head, _List* list, int pickUp, int dropOff)
 
 
 
+//==================================== CREATE STOP =================================================
+Stop* create_Stop(int floor) {
+  // make a pointer to a stop
+  Stop* new_Stop = (Stop*)malloc(sizeof(Stop));
 
+  //set the stopFloor to be what is parsed into the function
+  new_Stop->p_next = NULL;
+  new_Stop->stop = floor;
 
+  return new_Stop;
+}
 
-//=====================================SET ELEVATOR================================================
+//=================================== INSERT STOP ================================================
+int insert_Stop(int floor, Stop* stop_Head) {
+  //takes in the head of the list to insert from
+  Stop* new_Stop = create_Stop(floor);
+
+  if (new_Stop == NULL) return EXIT_ERR;
+
+  // if stops list is empty, insert a new stop at the beginning
+  if (stop_Head == NULL) {
+    stop_Head = new_Stop;
+  }
+
+  //otherwise traverse until you find the last item
+  Stop* temp = stop_Head;
+
+  while (temp->p_next != NULL) {
+    if (temp->stop == new_Stop ->stop) {
+      return EXIT_OK; //there will only ever be floors 1 to 4 in the elevator
+    }
+    temp = temp->p_next;
+  }
+
+  temp->p_next = new_Stop;
+  return EXIT_OK;
+}
+
+//=====================================SET ELEVATOR===============================================
 void set_Elev(Elevator* elevator, int desired_Floor, int req_BUTTON) {
 
   //CHECK FOR FLOOR LIMITS IF THE ELEV IS ON 4 DONT GO UP IF ITS ON 1 DONT GO DOWN
-
-  /* CHANGE THIS FUNCTION TO USE AN UNSIGNED LONG AS A COUNTER INSTEAD OF MILLIS
-   * THIS WAY IT IS ONLY INCREMETED IN THE LOOP AND CANNOT MISS A COUND
-   * PAUSE THE INCREMENTATION OF THIS COUNTER UNTIL THE USER ENTERS A REQUEST
-   */
 
   /* HAVE PARAM TO INDICATE IF IDLE AND SET DIRECTLY WITHOUT CHECKING EACH FLOOR 
    * STOP AT REQ FLOOR AND PICK UP PASSANGER, THEN CONTINUE TO CHECK EACH FLOOR TO SEE
@@ -147,7 +177,7 @@ void set_Elev(Elevator* elevator, int desired_Floor, int req_BUTTON) {
 
     Serial.print("Current Floor: ");
     Serial.println(elevator->current_Floor);
-    
+
     while (start_Time <= (distance * FLOOR_INTERVAL)) {
 
       //Check if a request wants to be entered

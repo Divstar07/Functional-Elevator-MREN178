@@ -35,7 +35,7 @@ typedef struct stopFloor {
 
 // Structure of a stop list, will have max 4 stops ever
 typedef struct {
-  Stop* head;
+  Stop* head; // initialize head as NULL when you initialize the list
 
 } stop_List;
 
@@ -57,7 +57,7 @@ int insert_Request(request*, int, int);
 void delete_Request();
 
 //create a stop struct
-void create_Stop();
+Stop* create_Stop();
 
 /* insert a stop into the right list. If the stop already exists in the list, do not insert;
  * returning smallest stop is faster this way
