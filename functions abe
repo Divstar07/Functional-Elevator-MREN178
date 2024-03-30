@@ -19,7 +19,7 @@ int delete_request(int delete_floor, request** request_head, request** passenger
 //                 request *temp = request_head*;
 //                 *request_head = temp->next_req;
                    //INSERT HERE
-                   
+                   insert_curr(temp, curr_list, temp->, int dropOff)
 //                 free(temp);
 //                 if (request_head == NULL){
 //                     return EXIT_OK;
