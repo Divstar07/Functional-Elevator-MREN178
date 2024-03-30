@@ -19,7 +19,7 @@ int delete_request(int delete_floor, request** request_head, request** passenger
 //                 request *temp = request_head*;
 //                 *request_head = temp->next_req;
                    //INSERT HERE
-                   insert_curr(temp, curr_list, temp->, int dropOff)
+                   insert_curr(passenger_Head, curr_list, temp->pickUp, temp->dropOff);
 //                 free(temp);
 //                 if (request_head == NULL){
 //                     return EXIT_OK;
@@ -32,7 +32,8 @@ int delete_request(int delete_floor, request** request_head, request** passenger
 //                 request* temp2 = temp->next_req->next_req;
 //                 request* temp3 = temp->next_req;
 //                 temp->next_req = temp2;
-                   //INSERT temp3
+                   //INSERT 
+                   insert_curr(passenger_Head, curr_list, temp3->pickUp, temp3->dropOff);
 //                 free(temp3);
 //             } else{
 //                 temp = temp->next_req;
@@ -46,5 +47,27 @@ int delete_request(int delete_floor, request** request_head, request** passenger
 
 //   else {
 //     // if deleting from current passangers list, then passenger has been delivered
+       if (*passenger_Head->floor == delete_floor){
+//             while (*passenger_Head->floor == delete_floor) {
+//                 request *temp = *passenger_Head;
+//                 *passenger_Head = temp->next_req;
+                  
+                  
+//                 free(temp);
+//                 if (*passenger_Head == NULL){
+//                     return EXIT_OK;
+//                 }
+//             }
+
+//         request* temp = *passenger_Head;
+//         while(temp->next_req != NULL){
+//             if (temp->next_req->floor == delete_floor){
+//                 request* temp2 = temp->next_req->next_req;
+//                 request* temp3 = temp->next_req;
+//                 temp->next_req = temp2;
+//                 free(temp3);
+//             } else{
+//                 temp = temp->next_req;
+//             }
 //   }
 // }
