@@ -70,7 +70,7 @@ request* create_Request(int pickUp, int dropOff) {
 
 //===============================INSERT REQUEST======================================================
 
-int insert_request(request** request_head, _List* req_List, int pickUp, int dropOff, Stop** pickUp_Head) {
+int insert_request(request** request_head, _List* req_List, int pickUp, int dropOff) {
 
   request* new_request = create_Request(pickUp, dropOff);
   if (new_request == NULL) return EXIT_ERR;
@@ -84,9 +84,6 @@ int insert_request(request** request_head, _List* req_List, int pickUp, int drop
     Serial.print("Number of unpicked passengers:");
     Serial.println(req_List->count);  //print out number of requests still in list
 
-    //insert the stop of the request into the pickup stops list
-    insert_Stop(new_request->pickUp, pickUp_Head);
-
     return EXIT_OK;
   } else {
     request* temp = (*request_head);
@@ -99,15 +96,13 @@ int insert_request(request** request_head, _List* req_List, int pickUp, int drop
     req_List->count++;
     Serial.print("Number of unpicked passengers:");
     Serial.println(req_List->count);
-
-    insert_Stop(new_request->pickUp, pickUp_Head);  //insert into stops to pickup
   }
   return EXIT_OK;
 }
 
 //==================================== INSERT CURR ==========================================================
 
-int insert_curr(request** curr_Head, _List* curr_list, int pickUp, int dropOff, Stop** dropOff_Head) {
+int insert_curr(request** curr_Head, _List* curr_list, int pickUp, int dropOff) {
   /* REMEMBER TO INCREASE THE COUNT OF THE LIST AFTER EACH INSERT
    * MAYBE TAKE IN THE LIST AS A PARAMETER AND INCREASE THE COUNT AFTER EACH INSERT
    */
@@ -127,9 +122,6 @@ int insert_curr(request** curr_Head, _List* curr_list, int pickUp, int dropOff, 
   if ((*curr_Head) == NULL) {
     (*curr_Head) = new_Passenger;
 
-    //insert into stops to drop off
-    insert_Stop(new_Passenger->dropOff, dropOff_Head);
-
     return EXIT_OK;
   } else {
     request* temp = (*curr_Head);
@@ -138,7 +130,6 @@ int insert_curr(request** curr_Head, _List* curr_list, int pickUp, int dropOff, 
       temp = temp->next_req;
     }
     temp->next_req = new_Passenger;
-    insert_Stop(new_Passenger->dropOff, dropOff_Head);
   }
   return EXIT_OK;
 }
@@ -146,7 +137,7 @@ int insert_curr(request** curr_Head, _List* curr_list, int pickUp, int dropOff, 
 //===================================== REQ DEL ========================================================
 
 
-int req_del(int delete_floor, request** request_head, _List* curr_list) {
+int req_del(int delete_floor, request** request_head, _List* req_list, request** curr_Head, _List* curr_list, int direction) {
   /* request_head is the head of the request list
    * passenger_Head is the head of the current passengers list
    * REMEMBER THESE ARE DOUBLE POINTERS
@@ -166,13 +157,14 @@ int req_del(int delete_floor, request** request_head, _List* curr_list) {
    * IF IT IS NOT FULL. add them one by one until it is full, then stop adding
    */
 
-  if ((*request_head)->pickUp == delete_floor) {
-    while ((*request_head)->pickUp == delete_floor) {
+  if ((*request_head)->pickUp == delete_floor && (*request_head)->direction == direction) {
+    while ((*request_head)->pickUp == delete_floor && (*request_head)->direction == direction) {
 
 
       temp = *request_head;
       //INSERT HERE
       insert_result = insert_curr(&(curr_list->p_head), curr_list, temp->pickUp, temp->dropOff);
+      //insert stop
 
       if (insert_result == 0) {
         return EXIT_ERR;  //elevator is full, exit
