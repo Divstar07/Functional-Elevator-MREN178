@@ -35,7 +35,7 @@ typedef struct stopFloor {
 
 // Structure of a stop list, will have max 4 stops ever
 typedef struct {
-  Stop* head; // initialize head as NULL when you initialize the list
+  Stop* head;  // initialize head as NULL when you initialize the list
 
 } stop_List;
 
@@ -51,21 +51,31 @@ typedef struct {
 request* create_Request(int, int);
 
 //insert a request into the right list
-int insert_Request(request*, int, int);
+int insert_request(request**, _List*, int, int);
 
-//delete a request from the right list
-void delete_Request();
+  //insert into current passengers list
+  int insert_curr(request**, _List*, int, int);
 
-//create a stop struct
-Stop* create_Stop();
+  //delete a request from the right list
+  int req_del(int, request**, _List*);
+
+  //delete fromt current passangers list
+  int curr_del(int, request**, _List*);
+
+  //create a stop struct
+  Stop* create_Stop();
 
 /* insert a stop into the right list. If the stop already exists in the list, do not insert;
  * returning smallest stop is faster this way
- */ 
-void insert_Stop();
+ */
 
-//returns the next stop of elevator depending on direction of travel
-int return_Stop();
+
+  int req_del(int, request**, _List*);
+
+  int insert_Stop(int, Stop**);
+
+  //returns the next stop of elevator depending on direction of travel
+  int return_Stop();
 
 //checks if the elevator is idle
 void check_Idle();
@@ -74,7 +84,7 @@ void check_Idle();
 void set_Elev(Elevator*, int, int);
 
 //checks if there is anyone to pickup or drop off on the floor parsed in
-void check_Floor();
+bool search_Floor();
 
 
 
