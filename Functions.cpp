@@ -111,6 +111,9 @@ int insert_curr(request** curr_Head, _List* curr_list, int pickUp, int dropOff, 
   /* REMEMBER TO INCREASE THE COUNT OF THE LIST AFTER EACH INSERT
    * MAYBE TAKE IN THE LIST AS A PARAMETER AND INCREASE THE COUNT AFTER EACH INSERT
    */
+
+
+  /* KEEP COUNT OF LIST */
   request* new_Passenger = create_Request(pickUp, dropOff);
   if (new_Passenger == NULL) {
     Serial.println("Error creating new request. Source: insert_curr");
@@ -150,6 +153,7 @@ int req_del(int delete_floor, request** request_head, _List* curr_list) {
    */
 
   //REMEMBER FAILURE CONDITIONS. PRINT WHEN A PICKUP WAS MADE
+  //UPDATE COUNT OF LIST
 
   int insert_result = 1;
   request* temp;
@@ -164,8 +168,9 @@ int req_del(int delete_floor, request** request_head, _List* curr_list) {
 
   if ((*request_head)->pickUp == delete_floor) {
     while ((*request_head)->pickUp == delete_floor) {
+
+
       temp = *request_head;
-      *request_head = temp->next_req;
       //INSERT HERE
       insert_result = insert_curr(&(curr_list->p_head), curr_list, temp->pickUp, temp->dropOff);
 
@@ -173,6 +178,7 @@ int req_del(int delete_floor, request** request_head, _List* curr_list) {
         return EXIT_ERR;  //elevator is full, exit
       }
 
+      *request_head = temp->next_req;
       free(temp);
       if (request_head == NULL) {
         //All requests were entered into the current passengers list
@@ -185,7 +191,6 @@ int req_del(int delete_floor, request** request_head, _List* curr_list) {
     if ((temp->next_req->pickUp) == delete_floor) {
       request* new_nextNode = temp->next_req->next_req;
       request* nodeToDelete = temp->next_req;
-      temp->next_req = new_nextNode;
       //INSERT
       insert_result = insert_curr(&(curr_list->p_head), curr_list, nodeToDelete->pickUp, nodeToDelete->dropOff);
 
@@ -193,6 +198,7 @@ int req_del(int delete_floor, request** request_head, _List* curr_list) {
         return EXIT_ERR;  //exit the function since the elevator is full
       }
 
+      temp->next_req = new_nextNode;
       free(nodeToDelete);
     } else {
       temp = temp->next_req;
@@ -220,7 +226,9 @@ int curr_del(int delete_floor, request** passenger_Head, _List* curr_list) {
       *passenger_Head = temp->next_req;
 
       free(temp);
+      curr_list->count--;
       Serial.println("Delivered Passanger");
+
       if (*passenger_Head == NULL) {
         //all passengers delivered
         return EXIT_OK;
@@ -235,6 +243,8 @@ int curr_del(int delete_floor, request** passenger_Head, _List* curr_list) {
       request* nodeToDelete = temp->next_req;
       temp->next_req = new_nextNode;
       free(nodeToDelete);  //passanger dropped off
+      curr_list->count--;  //see if there is anywhere else this has to be donr
+
       Serial.println("Delivered Passanger");
     } else {
       temp = temp->next_req;
@@ -245,28 +255,37 @@ int curr_del(int delete_floor, request** passenger_Head, _List* curr_list) {
 }
 
 //==================================== SEARCH STOPS ===============================================
-bool search_Floor(stop* stop_Head, int cmp_Floor) {
+bool search_Floor(Stop* stop_Head, int cmp_Floor) {
   /* At each floor, search the stops to pick up list to see if there is any passanger to add to the list
    * and search the stops to drop off for the same reason
    * return true if a stop is found
    */
   if (stop_Head == NULL) return false;
 
-  stop* temp = stop_Head;
+  Stop* temp = stop_Head;
   //traverse stop list, and if a stop matching cmp_Floor is found, return true
   while (temp->p_next != NULL) {
 
     if (temp->stop == cmp_Floor) {
       return true;
     }
-
     temp = temp->p_next;
   }
+
+  //if code reaches here, then a floor was not found
+  return false;
+}
+
+//===================================== RETURN STOPS ==============================================
+//returns the closest stop of elevator depending on direction of travel
+int return_Stop(direction curr_dir, Stop* stop_Head) {
+  //If moving up, return the smallest stop in the dropOff list
+  //if moving down, return the largest stop in the dropOff list
 }
 
 
 //===================================== SET ELEVATOR ===============================================
-void set_Elev(Elevator* elevator, int desired_Floor, int req_BUTTON) {
+void set_Elev(Elevator* elevator, int desired_Floor, int req_BUTTON, _List req_List, _List curr_Passenger) {
 
   //CHECK FOR FLOOR LIMITS IF THE ELEV IS ON 4 DONT GO UP IF ITS ON 1 DONT GO DOWN
 
@@ -286,6 +305,7 @@ void set_Elev(Elevator* elevator, int desired_Floor, int req_BUTTON) {
 
   //if desired_Floor > currFloor elevator moves up
   if (desired_Floor > elevator->current_Floor) {
+    elevator->curr_dir = UP;
     Serial.println("Going Up!");
 
     Serial.print("Current Floor: ");
@@ -312,6 +332,7 @@ void set_Elev(Elevator* elevator, int desired_Floor, int req_BUTTON) {
 
   } else if (desired_Floor < elevator->current_Floor) {
     Serial.println("Going Down!");
+    elevator->curr_dir = DOWN;
 
     Serial.print("Current Floor: ");
     Serial.println(elevator->current_Floor);
@@ -335,4 +356,6 @@ void set_Elev(Elevator* elevator, int desired_Floor, int req_BUTTON) {
   }
 
   // INCLUDE DELAY TO SIMULATE STATIONARY TIME AFTER STOPPED
+
+  if ()
 }

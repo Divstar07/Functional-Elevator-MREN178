@@ -42,6 +42,7 @@ typedef struct {
 // Structure of elevator
 typedef struct {
   int current_Floor;
+  direction curr_dir;
 } Elevator;
 
 
@@ -84,7 +85,7 @@ void check_Idle();
 void set_Elev(Elevator*, int, int);
 
 //checks if there is anyone to pickup or drop off on the floor parsed in
-bool search_Floor();
+bool search_Floor(Stop*, int);
 
 
 
