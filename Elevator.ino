@@ -46,6 +46,7 @@ void loop() {
     set_Elev_idle(&elev, (req_List.p_head)->pickUp, 0, &(req_List.p_head), &req_List, &curr_Pass, &(dropOff_List.head));
     set_Elev(&elev, (curr_Pass.p_head)->dropOff, 0, &(req_List.p_head), &req_List, &curr_Pass, &(dropOff_List.head));
   }
+  
 }
 void askAU() {
   button = analogRead(0);
@@ -105,6 +106,8 @@ void aum() {
   lcd.print("All Tasks");
   delay(2200);
   lcd.clear();
+  set_Elev(&elev, (curr_Pass.p_head)->dropOff, 0, &(req_List.p_head), &req_List, &curr_Pass, &(dropOff_List.head));
+  
 
   //Ask the AU for the floor they're  on
   lcd.write((byte)0x00);  //Display the AU custom character in the top right corner
