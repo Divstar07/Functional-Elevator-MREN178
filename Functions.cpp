@@ -534,4 +534,160 @@ void set_Elev_idle(Elevator* elevator, int desired_Floor, int req_BUTTON, reques
 
   isIdle = false;
 }
-void au_mode(int curr_floor, int desired_floor, request** req_head, request** cur_head,  
+void au_mode_pick(Elevator* elevator, int desired_Floor, Stop* stop_Head) {
+    if (elevator->current_Floor == desired_Floor) {
+        //pickup the passenger and call the regular set elevator function from what is returned
+        //from return stops
+
+        insert_Stop(desired_Floor, &stop_Head);
+
+        Serial.println("Dropped off AU");
+        return;
+    }
+
+
+    int distance = abs(desired_Floor - elevator->current_Floor);
+    unsigned long start_Time = 1;  //store the time the elevator starts moving
+
+    //ADD AN IF STATEMENT TO CHECK CURRENT FLOOR ON THE FIRST FLOOR BECAUSE I'M CHANGING THE LOOP
+
+    //if desired_Floor > currFloor elevator moves up
+    if ((desired_Floor > elevator->current_Floor)) {
+        elevator->curr_dir = UP;
+
+        Serial.println("Going Up!");
+
+        Serial.print("Current Floor: ");
+        Serial.println(elevator->current_Floor);
+
+
+        while (start_Time <= (distance * FLOOR_INTERVAL)) {
+
+
+            if ((start_Time % FLOOR_INTERVAL) == 0) {
+                elevator->current_Floor++;
+                //CHECK DROP OFF AND PICKUP LISTS TO SEE IF NEED TO OFFLOAD OR ONBOARD ELEV
+                Serial.print("Current Floor: ");
+                Serial.println(elevator->current_Floor);
+            }
+            if (elevator->current_Floor == desired_Floor) {
+                //pickup the passenger and call the regular set elevator function from what is returned
+                //from return stops
+
+                insert_Stop(desired_Floor, &stop_Head);
+
+                Serial.println("Dropped off AU");
+            }
+
+            start_Time++;
+        }
+
+        // INCLUDE DELAY TO SIMULATE STATIONARY TIME AFTER STOPPED
+
+    } else if ((desired_Floor < elevator->current_Floor)) {
+        Serial.println("Going Down!");
+        elevator->curr_dir = DOWN;
+
+        Serial.print("Current Floor: ");
+        Serial.println(elevator->current_Floor);
+
+        while (start_Time <= (distance * FLOOR_INTERVAL)) {
+
+
+            if ((start_Time % FLOOR_INTERVAL) == 0) {
+                elevator->current_Floor--;
+                //CHECK DROP OFF AND PICKUP LISTS TO SEE IF NEED TO OFFLOAD OR ONBOARD ELEV
+                Serial.print("Current Floor: ");
+                Serial.println(elevator->current_Floor);
+
+            }
+            if (elevator->current_Floor == desired_Floor) {
+                //pickup the passenger and call the regular set elevator function from what is returned
+                //from return stops
+                insert_Stop(desired_Floor, &stop_Head);
+
+                Serial.println("Dropped off AU");
+            }
+            start_Time++;
+        }
+    }
+}
+void au_mode_drop(Elevator* elevator, int desired_Floor, Stop* stop_Head) {
+    if (elevator->current_Floor == desired_Floor) {
+        //pickup the passenger and call the regular set elevator function from what is returned
+        //from return stops
+
+        stop_del(desired_Floor, &stop_Head);
+
+        Serial.println("Dropped off AU");
+        return;
+    }
+
+
+    int distance = abs(desired_Floor - elevator->current_Floor);
+    unsigned long start_Time = 1;  //store the time the elevator starts moving
+
+    //ADD AN IF STATEMENT TO CHECK CURRENT FLOOR ON THE FIRST FLOOR BECAUSE I'M CHANGING THE LOOP
+
+    //if desired_Floor > currFloor elevator moves up
+    if ((desired_Floor > elevator->current_Floor)) {
+        elevator->curr_dir = UP;
+
+        Serial.println("Going Up!");
+
+        Serial.print("Current Floor: ");
+        Serial.println(elevator->current_Floor);
+
+
+        while (start_Time <= (distance * FLOOR_INTERVAL)) {
+
+
+            if ((start_Time % FLOOR_INTERVAL) == 0) {
+                elevator->current_Floor++;
+                //CHECK DROP OFF AND PICKUP LISTS TO SEE IF NEED TO OFFLOAD OR ONBOARD ELEV
+                Serial.print("Current Floor: ");
+                Serial.println(elevator->current_Floor);
+            }
+            if (elevator->current_Floor == desired_Floor) {
+                //pickup the passenger and call the regular set elevator function from what is returned
+                //from return stops
+
+                stop_del(desired_Floor, &stop_Head);
+
+                Serial.println("Dropped off AU");
+            }
+
+            start_Time++;
+        }
+
+        // INCLUDE DELAY TO SIMULATE STATIONARY TIME AFTER STOPPED
+
+    } else if ((desired_Floor < elevator->current_Floor)) {
+        Serial.println("Going Down!");
+        elevator->curr_dir = DOWN;
+
+        Serial.print("Current Floor: ");
+        Serial.println(elevator->current_Floor);
+
+        while (start_Time <= (distance * FLOOR_INTERVAL)) {
+
+
+            if ((start_Time % FLOOR_INTERVAL) == 0) {
+                elevator->current_Floor--;
+                //CHECK DROP OFF AND PICKUP LISTS TO SEE IF NEED TO OFFLOAD OR ONBOARD ELEV
+                Serial.print("Current Floor: ");
+                Serial.println(elevator->current_Floor);
+
+            }
+            if (elevator->current_Floor == desired_Floor) {
+                //pickup the passenger and call the regular set elevator function from what is returned
+                //from return stops
+                stop_del(desired_Floor, &stop_Head);
+
+                Serial.println("Dropped off AU");
+            }
+            start_Time++;
+        }
+    }
+}
+
