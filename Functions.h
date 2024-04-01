@@ -71,4 +71,8 @@ void set_Elev(Elevator*, int, int, request**,
 
 void set_Elev_idle(Elevator*, int, int, request**, _List*,
                    _List*, Stop**);
+
+void request_Menu();
+
+void desired_floor();
 #endif

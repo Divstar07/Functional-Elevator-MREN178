@@ -46,7 +46,6 @@ void loop() {
     set_Elev_idle(&elev, (req_List.p_head)->pickUp, 0, &(req_List.p_head), &req_List, &curr_Pass, &(dropOff_List.head));
     set_Elev(&elev, (curr_Pass.p_head)->dropOff, 0, &(req_List.p_head), &req_List, &curr_Pass, &(dropOff_List.head));
   }
-  
 }
 void askAU() {
   button = analogRead(0);
@@ -106,7 +105,6 @@ void aum() {
   lcd.print("All Tasks");
   delay(2200);
   lcd.clear();
-  set_Elev(&elev, (curr_Pass.p_head)->dropOff, 0, &(req_List.p_head), &req_List, &curr_Pass, &(dropOff_List.head));
   
 
   //Ask the AU for the floor they're  on
@@ -129,7 +127,7 @@ void aum() {
   while (au_floor_desired != num) {
     desired_floor_au();
   }
-
+  
   bool shouldExit = askExitAUM();
   if (shouldExit == true) {
     lcd.clear();
