@@ -530,6 +530,8 @@ void set_Elev_idle(Elevator* elevator, int desired_Floor, int req_BUTTON, reques
       start_Time++;
     }
   }
+  
 
   isIdle = false;
 }
+void au_mode(int curr_floor, int desired_floor, request** req_head, request** cur_head,  
