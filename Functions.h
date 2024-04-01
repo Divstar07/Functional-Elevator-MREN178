@@ -58,7 +58,7 @@ int insert_request(request**, _List*, int, int);
 
 int insert_curr(request**, _List*, int, int);
 
-int req_del(int, request**, _List*, Stop**, int);
+int req_del(int, request**, _List*, _List*, Stop**, int);
 
 int curr_del(int, request**, _List*);
 
@@ -66,8 +66,9 @@ int stop_del(int, Stop**);
 
 int return_Stop(direction, Stop*);
 
-void set_Elev_idle(Elevator*, int, int, request**, _List*, Stop**);
+void set_Elev(Elevator*, int, int, request**,
+              _List*, _List*, Stop**);
 
-void set_Elev(Elevator*, int, int, request**, _List*);
-
+void set_Elev_idle(Elevator*, int, int, request**, _List*,
+                   _List*, Stop**);
 #endif
