@@ -439,6 +439,7 @@ void set_Elev_idle(Elevator* elevator, int desired_Floor, int req_BUTTON, reques
   //if desired_Floor > currFloor elevator moves up
   if ((desired_Floor > elevator->current_Floor)) {
     elevator->curr_dir = UP;
+
     Serial.println("Going Up!");
 
     Serial.print("Current Floor: ");
@@ -459,7 +460,7 @@ void set_Elev_idle(Elevator* elevator, int desired_Floor, int req_BUTTON, reques
         Serial.println(elevator->current_Floor);
       }
 
-      if (elevator->current_Floor == (*req_Head)->pickUp) {
+      if (elevator->current_Floor == desired_Floor) {
         //pickup the passenger and call the regular set elevator function from what is returned
         //from return stops
         req_del(elevator->current_Floor, req_Head, req_List, curr_List, stop_Head, (*req_Head)->req_dir);
@@ -491,7 +492,7 @@ void set_Elev_idle(Elevator* elevator, int desired_Floor, int req_BUTTON, reques
         Serial.println(elevator->current_Floor);
       }
 
-      if (elevator->current_Floor == (*req_Head)->pickUp) {
+      if (elevator->current_Floor == desired_Floor) {
         //pickup the passenger and call the regular set elevator function from what is returned
         //from return stops
 
