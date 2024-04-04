@@ -8,6 +8,7 @@ LiquidCrystal lcd(8, 9, 4, 5, 6, 7);
 //Initializing integer variables
 int button, floor_num, au_floor_num, floor_desired, au_floor_desired, x;
 int num = 1;
+int au_Count = 0;
 
 _List req_List;
 _List curr_Pass;
@@ -92,31 +93,41 @@ void title() {
 
 //Funtion for Authorized User Mode (AUM)
 void aum() {
+  floor_num = 0;
+  floor_desired = 0;
+  au_floor_num = 0;
+  au_floor_desired = 0;
   //Custom Character for AU mode
   byte aum_char[8] = { 0x0E, 0x11, 0x1F, 0x11, 0x00, 0x11, 0x11, 0x0E };
   lcd.createChar(0, aum_char);  //Creates the AU custom character
 
   lcd.clear();  // Clear screen before AU mode begins
+  if (au_Count == 0) {
+    //Write "AU Mode Initiated" on the LCD for 1.5 seconds
+    lcd.setCursor(0, 0);
+    lcd.print("AU Mode");
+    lcd.setCursor(0, 1);
+    lcd.print("Initiated");
+    delay(1500);
+    lcd.clear();
+    //Complete all current requests
+  }
 
-  //Write "AU Mode Initiated" on the LCD for 1.5 seconds
-  lcd.setCursor(0, 0);
-  lcd.print("AU Mode");
-  lcd.setCursor(0, 1);
-  lcd.print("Initiated");
-  delay(1500);
-  lcd.clear();
+  if (curr_Pass.p_head != NULL) {
+    lcd.setCursor(2, 0);
+    lcd.print("Completing");
+    delay(1000);
+    lcd.setCursor(2, 1);
+    lcd.print("All Tasks");
+    delay(2200);
+    lcd.clear();
 
-  //Display the AU custom character in the top right corner
-  lcd.write((byte)0x00);
+    while (curr_Pass.p_head != NULL) {
+      set_Elev_AU(&elev, (curr_Pass.p_head)->pickUp, &(req_List.p_head), &curr_Pass);
+      set_Elev_AU(&elev, (curr_Pass.p_head)->dropOff, &(req_List.p_head), &curr_Pass);
+    }
+  }
 
-  //Complete all current requests
-  lcd.setCursor(2, 0);
-  lcd.print("Completing");
-  delay(1000);
-  lcd.setCursor(2, 1);
-  lcd.print("All Tasks");
-  delay(2200);
-  lcd.clear();
 
   //Ask the AU for the floor they're  on
   lcd.write((byte)0x00);  //Display the AU custom character in the top right corner
@@ -127,7 +138,6 @@ void aum() {
   while (au_floor_num != num) {
     floor_on_au();
   }
-  
   //Ask the AU for the floor they would like to go to
   lcd.clear();
   lcd.write((byte)0x00);
@@ -138,18 +148,26 @@ void aum() {
   while (au_floor_desired != num) {
     desired_floor_au();
   }
-
+  
+  au_mode_pick(&elev, au_floor_num, &(dropOff_List.head));
+  au_mode_drop(&elev, au_floor_desired, &(dropOff_List.head));
   bool shouldExit = askExitAUM();
   if (shouldExit == true) {
     lcd.clear();
     lcd.print("Exiting AU Mode");
     delay(1500);  // Give some time for the user to read the message
+    lcd.clear();
+    au_Count = 0;
+
+    set_Elev_Empty(&elev, (req_List.p_head)->pickUp, 0, &(req_List.p_head), &req_List, &curr_Pass, &(dropOff_List.head));
     return;
   } else if (shouldExit == false) {
     lcd.clear();
     lcd.print("Stay in AU Mode");
     delay(1500);  // Give some time for the user to read the message
     lcd.clear();
+    au_Count++;
+    aum();
   }
 }
 
