@@ -1,3 +1,4 @@
+#include "Arduino.h"
 #include "Functions.h"
 
 
@@ -5,7 +6,7 @@
 #define EXIT_ERR 0;
 
 unsigned long FLOOR_INTERVAL = 30000;  //might need to tweak
-unsigned long STOP_TIME = 2000;         //might need to tweak
+unsigned long STOP_TIME = 2000;        //might need to tweak
 
 extern bool isIdle;
 
@@ -187,6 +188,7 @@ int req_del(int delete_floor, request** request_head, _List* req_List, _List* cu
       free(temp);
       req_List->p_head = temp->next_req;
       (req_List->count) -= 1;
+      Serial.println("Picked up Passenger");
 
       if ((*request_head) == NULL) {
         //All requests were entered into the current passengers list
@@ -210,6 +212,8 @@ int req_del(int delete_floor, request** request_head, _List* req_List, _List* cu
 
       temp->next_req = new_nextNode;
       free(nodeToDelete);
+
+      Serial.println("Picked up Passenger");
       (req_List->count) -= 1;
     } else {
       temp = temp->next_req;
@@ -309,8 +313,6 @@ int stop_del(int delete_floor, Stop** stop_head) {
 }
 
 
-
-
 //===================================== RETURN STOPS ====================================================
 
 //returns the closest stop of elevator depending on direction of travel
@@ -355,15 +357,11 @@ void set_Elev(Elevator* elevator, int desired_Floor, int req_BUTTON, request** r
 
     //check if there's anyone to pickup
     req_del(elevator->current_Floor, req_Head, req_List, curr_List, stop_Head, elevator->curr_dir);
-
-    Serial.println("Picked up Passenger");
     return;
   }
 
   int distance = abs(desired_Floor - elevator->current_Floor);
   unsigned long start_Time = 1;  //store the time the elevator starts moving
-
-  //ADD AN IF STATEMENT TO CHECK CURRENT FLOOR ON THE FIRST FLOOR BECAUSE I'M CHANGING THE LOOP
 
   //if desired_Floor > currFloor elevator moves up
   if ((desired_Floor > elevator->current_Floor)) {
@@ -376,9 +374,12 @@ void set_Elev(Elevator* elevator, int desired_Floor, int req_BUTTON, request** r
     while (start_Time <= (distance * FLOOR_INTERVAL)) {
 
       //Check if a request wants to be entered
-      if (analogRead(req_BUTTON) < 60) { //They pressed "RIGHT"
-        //request_Menu(); //enter request mode on the 
+      if (analogRead(req_BUTTON) < 60) {  //They pressed "RIGHT"
+        //request_Menu(); //enter request mode on the
         Serial.println("User entered request");
+        askAU();
+        while (analogRead(req_BUTTON) < 60)
+          ;
       }
 
       if ((start_Time % FLOOR_INTERVAL) == 0) {
@@ -392,13 +393,11 @@ void set_Elev(Elevator* elevator, int desired_Floor, int req_BUTTON, request** r
         //check if there's anyone to pickup
         req_del(elevator->current_Floor, req_Head, req_List, curr_List, stop_Head, elevator->curr_dir);
       }
-
       start_Time++;
     }
+  }
 
-    // INCLUDE DELAY TO SIMULATE STATIONARY TIME AFTER STOPPED
-
-  } else if ((desired_Floor < elevator->current_Floor)) {
+  else if ((desired_Floor < elevator->current_Floor)) {
     Serial.println("Going Down!");
     elevator->curr_dir = DOWN;
 
@@ -408,9 +407,11 @@ void set_Elev(Elevator* elevator, int desired_Floor, int req_BUTTON, request** r
     while (start_Time <= (distance * FLOOR_INTERVAL)) {
 
       //Check if a request wants to be entered
-      if (analogRead(req_BUTTON) < 60) { //They pressed "RIGHT"
-        //request_Menu(); //enter request mode on the 
+      if (analogRead(req_BUTTON) < 60) {  //They pressed "RIGHT"
         Serial.println("User entered request");
+        askAU();
+        while (analogRead(req_BUTTON) < 60)
+          ;
       }
 
       if ((start_Time % FLOOR_INTERVAL) == 0) {
@@ -425,27 +426,18 @@ void set_Elev(Elevator* elevator, int desired_Floor, int req_BUTTON, request** r
         //check if there's anyone to pickup
         req_del(elevator->current_Floor, req_Head, req_List, curr_List, stop_Head, elevator->curr_dir);
       }
-
       start_Time++;
     }
   }
-
-  //INCLUDE DELAY TO SIMULATE STATIONARY TIME AFTER STOPPED
-
-  //if elev is empty, but there are still requests
-
-  // if (((curr_List->p_head) == NULL) && (req_Head != NULL)) {
-  //   set_Elev(elevator, (*req_Head)->pickUp, req_BUTTON, req_Head, curr_List);
-  // }
-
-  //update isIdle
   set_Idle(*req_Head, (curr_List->p_head));
 }
+
 
 //===================================== SET ELEVATOR IDLE ===============================================
 
 void set_Elev_idle(Elevator* elevator, int desired_Floor, int req_BUTTON, request** req_Head, _List* req_List,
                    _List* curr_List, Stop** stop_Head) {
+
 
   if (elevator->current_Floor == desired_Floor) {
     //pickup the passenger and call the regular set elevator function from what is returned
@@ -453,14 +445,13 @@ void set_Elev_idle(Elevator* elevator, int desired_Floor, int req_BUTTON, reques
     req_del(elevator->current_Floor, req_Head, req_List, curr_List, stop_Head, (*req_Head)->req_dir);
 
     Serial.println("Picked up Passenger");
+    isIdle = false;
     return;
   }
 
 
   int distance = abs(desired_Floor - elevator->current_Floor);
   unsigned long start_Time = 1;  //store the time the elevator starts moving
-
-  //ADD AN IF STATEMENT TO CHECK CURRENT FLOOR ON THE FIRST FLOOR BECAUSE I'M CHANGING THE LOOP
 
   //if desired_Floor > currFloor elevator moves up
   if ((desired_Floor > elevator->current_Floor)) {
@@ -475,9 +466,11 @@ void set_Elev_idle(Elevator* elevator, int desired_Floor, int req_BUTTON, reques
     while (start_Time <= (distance * FLOOR_INTERVAL)) {
 
       //Check if a request wants to be entered
-      if (analogRead(req_BUTTON) < 60) { //They pressed "RIGHT"
-        //request_Menu(); //enter request mode on the 
+      if (analogRead(req_BUTTON) < 60) {  //They pressed "RIGHT"
         Serial.println("User entered request");
+        askAU();
+        while (analogRead(req_BUTTON) < 60)
+          ;
       }
 
       if ((start_Time % FLOOR_INTERVAL) == 0) {
@@ -497,8 +490,6 @@ void set_Elev_idle(Elevator* elevator, int desired_Floor, int req_BUTTON, reques
       start_Time++;
     }
 
-    // INCLUDE DELAY TO SIMULATE STATIONARY TIME AFTER STOPPED
-
   } else if ((desired_Floor < elevator->current_Floor)) {
     Serial.println("Going Down!");
     elevator->curr_dir = DOWN;
@@ -509,9 +500,11 @@ void set_Elev_idle(Elevator* elevator, int desired_Floor, int req_BUTTON, reques
     while (start_Time <= (distance * FLOOR_INTERVAL)) {
 
       //Check if a request wants to be entered
-      if (analogRead(req_BUTTON) < 60) { //They pressed "RIGHT"
-        //request_Menu(); //enter request mode on the 
+      if (analogRead(req_BUTTON) < 60) {  //They pressed "RIGHT"
         Serial.println("User entered request");
+        askAU();
+        while (analogRead(req_BUTTON) < 60)
+          ;
       }
 
       if ((start_Time % FLOOR_INTERVAL) == 0) {
@@ -530,10 +523,116 @@ void set_Elev_idle(Elevator* elevator, int desired_Floor, int req_BUTTON, reques
       start_Time++;
     }
   }
-  
 
   isIdle = false;
+
 }
+
+
+void set_Elev_Empty(Elevator* elevator, int desired_Floor, int req_BUTTON, request** req_Head,
+                    _List* req_List, _List* curr_List, Stop** stop_Head) {
+
+
+  if (elevator->current_Floor == desired_Floor) {
+    //pickup the passenger and call the regular set elevator function from what is returned
+    //from return stops
+    curr_del(elevator->current_Floor, &(curr_List->p_head), curr_List);
+
+    //check if there's anyone to pickup
+    req_del(elevator->current_Floor, req_Head, req_List, curr_List, stop_Head, (*req_Head)->req_dir);
+
+    return;
+  }
+
+  int distance = abs(desired_Floor - elevator->current_Floor);
+  unsigned long start_Time = 1;  //store the time the elevator starts moving
+
+  //if desired_Floor > currFloor elevator moves up
+  if ((desired_Floor > elevator->current_Floor)) {
+    elevator->curr_dir = UP;
+    Serial.println("Going Up!");
+
+    Serial.print("Current Floor: ");
+    Serial.println(elevator->current_Floor);
+
+    while (start_Time <= (distance * FLOOR_INTERVAL)) {
+
+      //Check if a request wants to be entered
+      if (analogRead(req_BUTTON) < 60) {  //They pressed "RIGHT"
+        //request_Menu(); //enter request mode on the
+        Serial.println("User entered request");
+        askAU();
+        while (analogRead(req_BUTTON) < 60)
+          ;
+      }
+
+
+      if ((start_Time % FLOOR_INTERVAL) == 0) {
+        elevator->current_Floor++;
+        //CHECK DROP OFF AND PICKUP LISTS TO SEE IF NEED TO OFFLOAD OR ONBOARD ELEV
+        Serial.print("Current Floor: ");
+        Serial.println(elevator->current_Floor);
+        if (start_Time == distance * FLOOR_INTERVAL) {
+          curr_del(elevator->current_Floor, &(curr_List->p_head), curr_List);
+
+          req_del(elevator->current_Floor, req_Head, req_List, curr_List, stop_Head, (*req_Head)->req_dir);
+          return;
+        }
+
+        //check if there's anyone to dropOff
+        curr_del(elevator->current_Floor, &(curr_List->p_head), curr_List);
+
+        //check if there's anyone to pickup
+        req_del(elevator->current_Floor, req_Head, req_List, curr_List, stop_Head, elevator->curr_dir);
+      }
+      start_Time++;
+    }
+  }
+
+  else if ((desired_Floor < elevator->current_Floor)) {
+    Serial.println("Going Down!");
+    elevator->curr_dir = DOWN;
+
+    Serial.print("Current Floor: ");
+    Serial.println(elevator->current_Floor);
+
+    while (start_Time <= (distance * FLOOR_INTERVAL)) {
+
+      //Check if a request wants to be entered
+      if (analogRead(req_BUTTON) < 60) {  //They pressed "RIGHT"
+        Serial.println("User entered request");
+        askAU();
+        while (analogRead(req_BUTTON) < 60)
+          ;
+      }
+
+      if ((start_Time % FLOOR_INTERVAL) == 0) {
+        elevator->current_Floor--;
+        //CHECK DROP OFF AND PICKUP LISTS TO SEE IF NEED TO OFFLOAD OR ONBOARD ELEV
+        Serial.print("Current Floor: ");
+        Serial.println(elevator->current_Floor);
+
+        if (start_Time == distance * FLOOR_INTERVAL) {
+          curr_del(elevator->current_Floor, &(curr_List->p_head), curr_List);
+
+          req_del(elevator->current_Floor, req_Head, req_List, curr_List, stop_Head, (*req_Head)->req_dir);
+          return;
+        }
+
+        //check if there's anyone to dropOff
+        curr_del(elevator->current_Floor, &(curr_List->p_head), curr_List);
+
+        //check if there's anyone to pickup
+        req_del(elevator->current_Floor, req_Head, req_List, curr_List, stop_Head, elevator->curr_dir);
+      }
+      start_Time++;
+    }
+  }
+  set_Idle(*req_Head, (curr_List->p_head));
+
+}
+
+
 void au_mode_pick(Elevator* elevator, int desired_Floor, Stop* stop_Head) {
     if (elevator->current_Floor == desired_Floor) {
         //pickup the passenger and call the regular set elevator function from what is returned

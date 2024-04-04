@@ -1,6 +1,8 @@
 // include the LCD library & Setup
 #include <LiquidCrystal.h>
 #include "Functions.h"
+
+
 LiquidCrystal lcd(8, 9, 4, 5, 6, 7);
 
 //Initializing integer variables
@@ -36,20 +38,30 @@ void setup() {
 void loop() {
 
   // Perform this loop forever and ever and ever and ever
-  floor_num = 0;
-  floor_desired = 0;
-  au_floor_num = 0;
-  au_floor_desired = 0;
   askAU();
 
   if (isIdle && (req_List.p_head) != NULL) {
     set_Elev_idle(&elev, (req_List.p_head)->pickUp, 0, &(req_List.p_head), &req_List, &curr_Pass, &(dropOff_List.head));
     set_Elev(&elev, (curr_Pass.p_head)->dropOff, 0, &(req_List.p_head), &req_List, &curr_Pass, &(dropOff_List.head));
   }
+
+  if ((curr_Pass.p_head) == NULL && (req_List.p_head) != NULL) {
+    Serial.println("Going to pick up new passanger!");
+    set_Elev_Empty(&elev, (req_List.p_head)->pickUp, 0, &(req_List.p_head), &req_List, &curr_Pass, &(dropOff_List.head));
+    set_Elev(&elev, (curr_Pass.p_head)->dropOff, 0, &(req_List.p_head), &req_List, &curr_Pass, &(dropOff_List.head));
+    //replace with a set elev function with the exact same functionality, but that searches the user direction
+  }
+
+  //ADD A BOOL FOR WHEN IN AU IF SO JUST BASICALLY ALWAYS CALL SET ELEV IDLE AND SET ELEV LIKE IN FIRST CONIDITION
+  //HAVE A SEPERATE LIST FOR AU REQUESTS, BUT MAKE SURE ELEV CAN STILL TAKE NORMAL USER REQUESTS.
 }
 void askAU() {
+  floor_num = 0;
+  floor_desired = 0;
+  au_floor_num = 0;
+  au_floor_desired = 0;
   button = analogRead(0);
-  //lcd.clear();
+
   lcd.home();
   lcd.print("Are you an AU?");
   lcd.setCursor(0, 1);
@@ -105,7 +117,6 @@ void aum() {
   lcd.print("All Tasks");
   delay(2200);
   lcd.clear();
-  
 
   //Ask the AU for the floor they're  on
   lcd.write((byte)0x00);  //Display the AU custom character in the top right corner
@@ -116,7 +127,7 @@ void aum() {
   while (au_floor_num != num) {
     floor_on_au();
   }
-
+  
   //Ask the AU for the floor they would like to go to
   lcd.clear();
   lcd.write((byte)0x00);
@@ -127,7 +138,7 @@ void aum() {
   while (au_floor_desired != num) {
     desired_floor_au();
   }
-  
+
   bool shouldExit = askExitAUM();
   if (shouldExit == true) {
     lcd.clear();

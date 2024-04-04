@@ -75,4 +75,15 @@ void set_Elev_idle(Elevator*, int, int, request**, _List*,
 void request_Menu();
 
 void desired_floor();
+
+void askAU();
+
+void set_Elev_Empty(Elevator*, int, int, request**,
+                    _List*, _List*, Stop**);
+
+void au_mode_pick(Elevator*, int, Stop*);
+
+void au_mode_drop(Elevator*, int, Stop*);
+
+
 #endif
