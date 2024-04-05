@@ -81,9 +81,12 @@ void askAU();
 void set_Elev_Empty(Elevator*, int, int, request**,
                     _List*, _List*, Stop**);
 
-void au_mode_pick(Elevator*, int, Stop*);
+void au_mode_pick(Elevator*, int, Stop**);
 
-void au_mode_drop(Elevator*, int, Stop*);
+void au_mode_drop(Elevator*, int, Stop**);
+
+void set_Elev_AU(Elevator*, int, request**,
+                 _List*);
 
 
 #endif
