@@ -12,10 +12,10 @@ int au_Count = 0;
 
 _List req_List;
 _List curr_Pass;
-stop_List dropOff_List;
 Elevator elev;
 
 bool isIdle;
+
 void setup() {
   //Setup LCD and Serial Monitor
   Serial.begin(9600);
@@ -27,8 +27,6 @@ void setup() {
   curr_Pass.p_head = NULL;
   curr_Pass.count = 0;
 
-  dropOff_List.head = NULL;
-
   elev.current_Floor = 1;
 
   isIdle = true;
@@ -38,24 +36,23 @@ void setup() {
 
 void loop() {
 
-  // Perform this loop forever and ever and ever and ever
   askAU();
 
-  if (isIdle && (req_List.p_head) != NULL) {
-    set_Elev_idle(&elev, (req_List.p_head)->pickUp, 0, &(req_List.p_head), &req_List, &curr_Pass, &(dropOff_List.head));
-    set_Elev(&elev, (curr_Pass.p_head)->dropOff, 0, &(req_List.p_head), &req_List, &curr_Pass, &(dropOff_List.head));
-  }
+  /* if the elevator is idle, but the request list is not empty, call set_elev_idle OR
+   * if the elevator is empty but the request list is not, pick up the first passenger
+   * in the request list without responsing to any requests in between and carry on normal function
+   */
 
-  if ((curr_Pass.p_head) == NULL && (req_List.p_head) != NULL) {
-    Serial.println("Going to pick up new passanger!");
-    set_Elev_Empty(&elev, (req_List.p_head)->pickUp, 0, &(req_List.p_head), &req_List, &curr_Pass, &(dropOff_List.head));
-    set_Elev(&elev, (curr_Pass.p_head)->dropOff, 0, &(req_List.p_head), &req_List, &curr_Pass, &(dropOff_List.head));
-    //replace with a set elev function with the exact same functionality, but that searches the user direction
+  if ((req_List.p_head) != NULL) {
+    if ((isIdle && (req_List.p_head) != NULL) || ((curr_Pass.p_head) == NULL && (req_List.p_head) != NULL)) {
+      set_Elev_idle(&elev, (req_List.p_head)->pickUp, 0, &(req_List.p_head), &req_List, &curr_Pass);
+    }
+    set_Elev(&elev, (curr_Pass.p_head)->dropOff, 0, &(req_List.p_head), &req_List, &curr_Pass);
   }
-
-  //ADD A BOOL FOR WHEN IN AU IF SO JUST BASICALLY ALWAYS CALL SET ELEV IDLE AND SET ELEV LIKE IN FIRST CONIDITION
-  //HAVE A SEPERATE LIST FOR AU REQUESTS, BUT MAKE SURE ELEV CAN STILL TAKE NORMAL USER REQUESTS.
 }
+
+//======================================= FUNCTION PROTOTYPES ========================================================
+
 void askAU() {
   floor_num = 0;
   floor_desired = 0;
@@ -68,6 +65,7 @@ void askAU() {
   lcd.setCursor(0, 1);
   lcd.print("Yes           No");
 
+  //button = analogRead(0);
   if (button < 60) {  // THat means they picked no
     request_Menu();   // Begin the request_Menu function
 
@@ -110,10 +108,10 @@ void aum() {
     lcd.print("Initiated");
     delay(1500);
     lcd.clear();
-    //Complete all current requests
   }
 
-  if (curr_Pass.p_head != NULL) {
+  //Complete all current requests
+  if (curr_Pass.count > 0) {
     lcd.setCursor(2, 0);
     lcd.print("Completing");
     delay(1000);
@@ -122,8 +120,8 @@ void aum() {
     delay(2200);
     lcd.clear();
 
-    while (curr_Pass.p_head != NULL) {
-      set_Elev_AU(&elev, (curr_Pass.p_head)->pickUp, &(req_List.p_head), &curr_Pass);
+    while (curr_Pass.count > 0) {
+      //Entire cycle to fulfill one request (multiple may be fulfilled in the process)
       set_Elev_AU(&elev, (curr_Pass.p_head)->dropOff, &(req_List.p_head), &curr_Pass);
     }
   }
@@ -148,9 +146,9 @@ void aum() {
   while (au_floor_desired != num) {
     desired_floor_au();
   }
-  
-  au_mode_pick(&elev, au_floor_num, &(dropOff_List.head));
-  au_mode_drop(&elev, au_floor_desired, &(dropOff_List.head));
+
+  au_mode_pick(&elev, au_floor_num);
+  au_mode_drop(&elev, au_floor_desired);
   bool shouldExit = askExitAUM();
   if (shouldExit == true) {
     lcd.clear();
@@ -159,7 +157,8 @@ void aum() {
     lcd.clear();
     au_Count = 0;
 
-    set_Elev_Empty(&elev, (req_List.p_head)->pickUp, 0, &(req_List.p_head), &req_List, &curr_Pass, &(dropOff_List.head));
+    //return to pick up the first passenger in the passenger list (MAY NOT NEED)
+    Serial.println("Exiting AU mode. One moment...");
     return;
   } else if (shouldExit == false) {
     lcd.clear();
@@ -170,8 +169,6 @@ void aum() {
     aum();
   }
 }
-
-
 
 //Function for request_Menu
 void request_Menu() {

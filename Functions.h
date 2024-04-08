@@ -48,29 +48,21 @@ typedef struct {
 
 bool set_Idle(request*, request*);
 
-Stop* create_Stop(int);
-
-int insert_Stop(int, Stop**);
-
 request* create_Request(int, int);
 
 int insert_request(request**, _List*, int, int);
 
 int insert_curr(request**, _List*, int, int);
 
-int req_del(int, request**, _List*, _List*, Stop**, int);
+int req_del(int, request**, _List*, _List*, int);
 
 int curr_del(int, request**, _List*);
 
-int stop_del(int, Stop**);
-
-int return_Stop(direction, Stop*);
-
 void set_Elev(Elevator*, int, int, request**,
-              _List*, _List*, Stop**);
+              _List*, _List*);
 
 void set_Elev_idle(Elevator*, int, int, request**, _List*,
-                   _List*, Stop**);
+                   _List*);
 
 void request_Menu();
 
@@ -78,15 +70,13 @@ void desired_floor();
 
 void askAU();
 
-void set_Elev_Empty(Elevator*, int, int, request**,
-                    _List*, _List*, Stop**);
+void aum();
 
-void au_mode_pick(Elevator*, int, Stop**);
+void au_mode_pick(Elevator*, int);
 
-void au_mode_drop(Elevator*, int, Stop**);
+void au_mode_drop(Elevator*, int);
 
 void set_Elev_AU(Elevator*, int, request**,
                  _List*);
-
 
 #endif
